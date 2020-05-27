@@ -1,0 +1,4 @@
+matplotlib
+requests
+mpld3
+jinja2
