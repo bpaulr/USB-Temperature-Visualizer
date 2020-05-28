@@ -1,6 +1,5 @@
 import os
 from typing import Dict
-from typing import List
 
 import matplotlib.pyplot as plt
 import mpld3
@@ -8,9 +7,12 @@ import json
 import dateutil.parser
 
 
-def create_graph(data_directory: str, output_dir: str, output_file: str = "graph.html") -> str:  # file path
+def create_graph(data_directory: str, output_dir: str, output_file) -> str:
     room_data = {}
-    files = [f for f in os.listdir(data_directory) if os.path.isfile(os.path.join(data_directory, f))]
+
+    files = [f for f in os.listdir(data_directory)
+             if os.path.isfile(os.path.join(data_directory, f))]
+
     for file in files:
         with open(os.path.join(data_directory, file)) as fp:
             json_data = json.load(fp)
@@ -31,11 +33,11 @@ def create_graph(data_directory: str, output_dir: str, output_file: str = "graph
     __add_to_graph(room_data)
 
     plt.title("USB PC Cluster Temperatures")
-    plt.xlabel("Date-Time")
+    plt.xlabel("Date-Time (ISO 8601)")
     plt.ylabel("Temperature (Degrees)")
     plt.legend()
-    plt.gcf().autofmt_xdate()
-
+    plt.gcf().autofmt_xdate()  # sort the x-axis by date
+    plt.gcf().set_size_inches(18.5, 10.5)
     html = __get_html_graph()
 
     if not os.path.exists(output_dir):
@@ -73,10 +75,7 @@ def __get_average(json_data: Dict):
     return sum(temps) / len(temps)
 
 
-# def __add_to_graph(room: str, xdatestrs: List[str], ytempfloats: List[float]) -> None:
 def __add_to_graph(room_data: Dict) -> None:
-    print()
     for k, v in room_data.items():
         datetime_dates = [dateutil.parser.parse(d) for d in v["dates"]]
-        print(datetime_dates)
         plt.plot(datetime_dates, v["temps"], label=k)
